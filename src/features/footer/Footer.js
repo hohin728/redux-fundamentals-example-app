@@ -1,7 +1,13 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 import { availableColors, capitalize } from '../filters/colors'
 import { StatusFilters } from '../filters/filtersSlice'
+
+const todosRemaining = (state) => {
+  const uncompletedTodos = state.todos.filter((todo) => !todo.completed)
+  return uncompletedTodos.length
+}
 
 const RemainingTodos = ({ count }) => {
   const suffix = count === 1 ? '' : 's'
