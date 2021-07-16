@@ -64,9 +64,16 @@ export default function todosReducer(state = initialState, action) {
         entities: state.entities.filter((todo) => !todo.completed),
       }
     }
+    case 'todos/todosLoading': {
+      return {
+        ...state,
+        status: 'loading',
+      }
+    }
     case 'todos/todosLoaded': {
       return {
         ...state,
+        status: 'idle',
         entities: action.payload,
       }
     }
@@ -116,6 +123,10 @@ export const selectFilteredTodoIds = createSelector(
   (todos) => todos.map((todo) => todo.id)
 )
 
+export const todosLoading = () => ({
+  type: 'todos/todosLoading',
+})
+
 export const todosLoaded = (todos) => ({
   type: 'todos/todosLoaded',
   payload: todos,
@@ -160,6 +171,7 @@ export function saveNewTodo(text) {
 export const fetchTodos = () => {
   // data processing...
   return async (dispatch) => {
+    dispatch(todosLoading())
     const response = await client.get('/fakeApi/todos')
     dispatch(todosLoaded(response.todos))
   }
