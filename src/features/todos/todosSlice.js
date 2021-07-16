@@ -116,23 +116,51 @@ export const selectFilteredTodoIds = createSelector(
   (todos) => todos.map((todo) => todo.id)
 )
 
-export async function fetchTodos(dispatch, getState) {
-  const response = await client.get('/fakeApi/todos')
+export const todosLoaded = (todos) => ({
+  type: 'todos/todosLoaded',
+  payload: todos,
+})
 
-  const stateBefore = getState()
-  console.log('Todos before dispatch: ', stateBefore.todos.entities.length)
+export const todoAdded = (todo) => ({
+  type: 'todos/todoAdded',
+  payload: todo,
+})
 
-  dispatch({ type: 'todos/todosLoaded', payload: response.todos })
+export const todoToggled = (todoId) => ({
+  type: 'todos/todoToggled',
+  payload: todoId,
+})
 
-  const stateAfter = getState()
-  console.log('Todos after dispatch', stateAfter.todos.entities.length)
-}
+export const todoColorSelected = (todoId, color) => ({
+  type: 'todos/colorSelected',
+  payload: { todoId, color },
+})
+
+export const todoDeleted = (todoId) => ({
+  type: 'todos/todoDeleted',
+  payload: todoId,
+})
+
+export const allTodosCompleted = () => ({
+  type: 'todos/allCompleted',
+})
+
+export const completedTodosCleared = () => ({
+  type: 'todos/completedCleared',
+})
 
 export function saveNewTodo(text) {
-  return async function saveNewTodoThunk(dispatch, getState) {
+  return async function saveNewTodoThunk(dispatch) {
     const initialTodo = { text }
     const response = await client.post('/fakeApi/todos', { todo: initialTodo })
-    console.log(response)
-    dispatch({ type: 'todos/todoAdded', payload: response.todo })
+    dispatch(todoAdded(response.todo))
+  }
+}
+
+export const fetchTodos = () => {
+  // data processing...
+  return async (dispatch) => {
+    const response = await client.get('/fakeApi/todos')
+    dispatch(todosLoaded(response.todos))
   }
 }

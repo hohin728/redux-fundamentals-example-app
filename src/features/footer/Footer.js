@@ -5,6 +5,9 @@ import { availableColors, capitalize } from '../filters/colors'
 import { StatusFilters, colorFilterChanged } from '../filters/filtersSlice'
 import { selectTodoIds } from '../todos/todosSlice'
 
+import { allTodosCompleted, completedTodosCleared } from '../todos/todosSlice'
+import { statusFilterChanged } from '../filters/filtersSlice'
+
 const RemainingTodos = ({ count }) => {
   const suffix = count === 1 ? '' : 's'
 
@@ -85,20 +88,14 @@ const Footer = () => {
 
   const { status, colors } = useSelector((state) => state.filters)
 
-  const onMarkCompletedClicked = () => dispatch({ type: 'todos/allCompleted' })
+  const onMarkCompletedClicked = () => dispatch(allTodosCompleted())
 
-  const onClearCompletedClicked = () =>
-    dispatch({ type: 'todos/completedCleared' })
+  const onClearCompletedClicked = () => dispatch(completedTodosCleared())
 
   const onColorChange = (color, changeType) =>
     dispatch(colorFilterChanged(color, changeType))
 
-  const onStatusChange = (status) => {
-    dispatch({
-      type: 'filters/statusFilterChanged',
-      payload: status,
-    })
-  }
+  const onStatusChange = (status) => dispatch(statusFilterChanged(status))
 
   return (
     <footer className="footer">

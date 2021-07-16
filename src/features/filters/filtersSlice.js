@@ -54,3 +54,8 @@ export function colorFilterChanged(color, changeType) {
     payload: { color, changeType },
   }
 }
+
+export const statusFilterChanged = (status) => ({
+  type: 'filters/statusFilterChanged',
+  payload: status,
+})
