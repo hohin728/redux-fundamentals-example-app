@@ -1,4 +1,4 @@
-import { createSlice, createSelector } from '@reduxjs/toolkit'
+import { createSlice, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 import { StatusFilters } from './../filters/filtersSlice'
 
@@ -6,6 +6,20 @@ const initialState = {
   status: 'idle',
   entities: {},
 }
+
+export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
+  const response = await client.get('/fakeApi/todos')
+  return response.todos
+})
+
+export const saveNewTodo = createAsyncThunk(
+  'todos/saveNewTodo',
+  async (text) => {
+    const initialTodo = { text }
+    const response = await client.post('/fakeApi/todos', { todo: initialTodo })
+    return response.todo
+  }
+)
 
 const todosSlice = createSlice({
   name: 'todos',
@@ -57,6 +71,25 @@ const todosSlice = createSlice({
       state.status = 'idle'
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTodos.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        const newEntities = {}
+        const todos = action.payload
+        todos.forEach((todo) => {
+          newEntities[todo.id] = todo
+        })
+        state.entities = newEntities
+        state.status = 'idle'
+      })
+      .addCase(saveNewTodo.fulfilled, (state, action) => {
+        const todo = action.payload
+        state.entities[todo.id] = todo
+      })
+  },
 })
 
 export const {
@@ -69,23 +102,6 @@ export const {
   todosLoading,
   todosLoaded,
 } = todosSlice.actions
-
-export const fetchTodos = () => {
-  // data processing...
-  return async (dispatch) => {
-    dispatch(todosLoading())
-    const response = await client.get('/fakeApi/todos')
-    dispatch(todosLoaded(response.todos))
-  }
-}
-
-export function saveNewTodo(text) {
-  return async function saveNewTodoThunk(dispatch) {
-    const initialTodo = { text }
-    const response = await client.post('/fakeApi/todos', { todo: initialTodo })
-    dispatch(todoAdded(response.todo))
-  }
-}
 
 export const selectTodoEntities = (state) => state.todos.entities
 
