@@ -63,12 +63,7 @@ const todosSlice = createSlice({
         state.status = 'loading'
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
-        const newEntities = {}
-        const todos = action.payload
-        todos.forEach((todo) => {
-          newEntities[todo.id] = todo
-        })
-        state.entities = newEntities
+        todosAdapter.setAll(state, action.payload)
         state.status = 'idle'
       })
       .addCase(saveNewTodo.fulfilled, todosAdapter.addOne)
@@ -86,14 +81,9 @@ export const {
 export default todosSlice.reducer
 
 export const {
-  // selectAll: selectTodos,
+  selectAll: selectTodos,
   selectById: selectTodoById,
 } = todosAdapter.getSelectors((state) => state.todos)
-
-export const selectTodos = createSelector(
-  (state) => state.todos.entities,
-  (entities) => Object.values(entities)
-)
 
 export const selectUncompletedTodos = createSelector(selectTodos, (todos) =>
   todos.filter((todo) => !todo.completed)
