@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { availableColors, capitalize } from '../filters/colors'
 import { StatusFilters, colorFilterChanged } from '../filters/filtersSlice'
-import { selectTodos, selectUncompletedTodos } from '../todos/todosSlice'
+import { selectUncompletedTodos } from '../todos/todosSlice'
 
 import { allTodosCompleted, completedTodosCleared } from '../todos/todosSlice'
 import { statusFilterChanged } from '../filters/filtersSlice'
